@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String?  @unique
+  createdAt   DateTime @default(now())
+  isAnonymous Boolean  @default(true)
+  teamId      String?
+  team        Team?    @relation(fields: [teamId], references: [id])
+  checkIns    CheckIn[]
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  name      String
+  users     User[]
+  createdAt DateTime @default(now())
+  shared    Boolean  @default(false)
+}
+
+model CheckIn {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  date      DateTime @default(now())
+  mode      Mode
+  phrase    String?
+}
+
+model Frase {
+  id        String   @id @default(cuid())
+  mode      Mode
+  content   String
+}
+
+enum Mode {
+  FLUJO
+  CURRO_LIGERO
+  VEGETAL
+  NO_ME_HABLES
+  UMBRAL
+}
